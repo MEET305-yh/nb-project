@@ -125,6 +125,39 @@
         </div>
       </el-tab-pane>
 
+      <el-tab-pane label="生长环境" name="environment">
+        <div class="details-section">
+          <div class="section-header">
+            <h2>生长环境</h2>
+          </div>
+          <div
+            v-if="!environmentImages.length && !product?.environmentVideo"
+            class="empty-state"
+          >
+            <el-empty description="商家暂未上传生长环境信息" />
+          </div>
+          <div v-else class="details-content">
+            <div v-if="environmentImages.length" class="detail-images-section">
+              <div
+                v-for="(img, index) in environmentImages"
+                :key="index"
+                class="detail-image-item"
+              >
+                <img :src="img" class="detail-image" />
+              </div>
+            </div>
+            <div v-if="product?.environmentVideo" class="env-video-wrapper">
+              <video
+                :src="product.environmentVideo"
+                controls
+                controlslist="nodownload"
+                style="width: 100%; border-radius: 8px; outline: none"
+              />
+            </div>
+          </div>
+        </div>
+      </el-tab-pane>
+
       <el-tab-pane label="本店推荐" name="recommended">
         <div class="recommended-section">
           <div class="section-header">
@@ -207,6 +240,12 @@ const previewImageUrl = ref('')
 const detailImages = computed(() => {
   if (!product.value?.detailImages) return []
   return product.value.detailImages.split(',').filter(img => img.trim())
+})
+
+// 生长环境图片列表
+const environmentImages = computed(() => {
+  if (!product.value?.environmentImages) return []
+  return product.value.environmentImages.split(',').filter(img => img.trim())
 })
 
 // 解析参数信息
@@ -586,6 +625,10 @@ onMounted(() => {
 .detail-image {
   width: 100%;
   border-radius: 8px;
+}
+
+.env-video-wrapper {
+  margin-top: 20px;
 }
 
 .detail-text {

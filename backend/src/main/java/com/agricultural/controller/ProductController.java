@@ -46,6 +46,8 @@ public class ProductController {
             product.setSpecifications(detail.getSpecifications());
             product.setDetailImages(detail.getDetailImages());
             product.setDetailText(detail.getDetailText());
+            product.setEnvironmentImages(detail.getEnvironmentImages());
+            product.setEnvironmentVideo(detail.getEnvironmentVideo());
         }
         return Result.success(product);
     }
@@ -94,6 +96,8 @@ public class ProductController {
         detail.setSpecifications(product.getSpecifications());
         detail.setDetailImages(product.getDetailImages());
         detail.setDetailText(product.getDetailText());
+        detail.setEnvironmentImages(product.getEnvironmentImages());
+        detail.setEnvironmentVideo(product.getEnvironmentVideo());
         adminProductDetailService.saveOrUpdate(detail);
     }
 }

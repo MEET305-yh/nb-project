@@ -92,6 +92,15 @@
         <el-form-item label="商品描述">
           <el-input v-model="productForm.description" type="textarea" :rows="3" />
         </el-form-item>
+        <el-form-item label="商品标签">
+          <el-input
+            v-model="productForm.tags"
+            placeholder="例如：产地直供, 时令优选（多个标签用逗号隔开）"
+          />
+          <div style="color: #909399; font-size: 12px; margin-top: 5px">
+            这些标签会显示在前台商品卡片上，用来突出特色卖点
+          </div>
+        </el-form-item>
         <el-form-item label="商品参数">
           <el-input 
             v-model="productForm.specifications" 
@@ -157,6 +166,48 @@
             支持HTML格式或纯文本，用于商品详情页展示
           </div>
         </el-form-item>
+        <el-form-item label="生长环境图片">
+          <el-upload
+            class="detail-uploader"
+            :http-request="handleEnvImageUpload"
+            :show-file-list="true"
+            :before-upload="beforeImageUpload"
+            :file-list="environmentImageList"
+            list-type="picture-card"
+            :on-remove="handleEnvImageRemove"
+          >
+            <el-icon class="detail-uploader-icon"><Plus /></el-icon>
+          </el-upload>
+          <div style="color: #909399; font-size: 12px; margin-top: 5px">
+            展示农产品生长环境的实景照片，支持多张图片
+          </div>
+        </el-form-item>
+        <el-form-item label="生长环境视频">
+          <el-upload
+            class="detail-uploader"
+            :http-request="handleEnvVideoUpload"
+            :show-file-list="false"
+            :before-upload="beforeVideoUpload"
+          >
+            <template #trigger>
+              <el-button type="primary" plain>
+                {{ productForm.environmentVideo ? '重新上传视频' : '上传视频' }}
+              </el-button>
+            </template>
+            <template #tip>
+              <div style="color: #909399; font-size: 12px; margin-top: 5px">
+                支持上传 mp4 等视频文件，大小不超过 200MB；上传后会自动生成播放地址
+              </div>
+            </template>
+          </el-upload>
+          <div v-if="productForm.environmentVideo" style="margin-top: 10px">
+            <video
+              :src="productForm.environmentVideo"
+              controls
+              style="width: 100%; border-radius: 8px"
+            />
+          </div>
+        </el-form-item>
         <el-form-item label="商家ID">
           <el-input-number v-model="productForm.merchantId" :min="0" style="width: 100%" />
         </el-form-item>
@@ -171,7 +222,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getAdminProducts, getAdminProduct, createAdminProduct, updateAdminProduct, deleteAdminProduct as deleteProductApi, updateProductStatus, getAllCategories, uploadImage } from '@/api/admin'
+import { getAdminProducts, getAdminProduct, createAdminProduct, updateAdminProduct, deleteAdminProduct as deleteProductApi, updateProductStatus, getAllCategories, uploadImage, uploadVideo } from '@/api/admin'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 
@@ -189,6 +240,7 @@ const categories = ref([])
 const productForm = ref({
   name: '',
   description: '',
+  tags: '',
   specifications: '',
   category: '',
   price: 0,
@@ -196,10 +248,13 @@ const productForm = ref({
   image: '',
   detailImages: '',
   detailText: '',
+  environmentImages: '',
+  environmentVideo: '',
   merchantId: null
 })
 
 const detailImageList = ref([])
+const environmentImageList = ref([])
 
 const loadProducts = async () => {
   loading.value = true
@@ -227,6 +282,7 @@ const openAddDialog = () => {
   productForm.value = {
     name: '',
     description: '',
+    tags: '',
     specifications: '',
     category: '',
     price: 0,
@@ -234,9 +290,12 @@ const openAddDialog = () => {
     image: '',
     detailImages: '',
     detailText: '',
+    environmentImages: '',
+    environmentVideo: '',
     merchantId: null
   }
   detailImageList.value = []
+  environmentImageList.value = []
   loadCategories()
   showDialog.value = true
 }
@@ -249,6 +308,7 @@ const editProduct = async (product) => {
     productForm.value = {
       name: detail.name,
       description: detail.description || '',
+      tags: detail.tags || '',
       specifications: detail.specifications || '',
       category: detail.category || '',
       price: detail.price,
@@ -256,6 +316,8 @@ const editProduct = async (product) => {
       image: detail.image || '',
       detailImages: detail.detailImages || '',
       detailText: detail.detailText || '',
+      environmentImages: detail.environmentImages || '',
+      environmentVideo: detail.environmentVideo || '',
       merchantId: detail.merchantId
     }
     if (detail.detailImages) {
@@ -269,11 +331,23 @@ const editProduct = async (product) => {
     } else {
       detailImageList.value = []
     }
+    if (detail.environmentImages) {
+      const images = detail.environmentImages.split(',').map(img => img.trim()).filter(Boolean)
+      environmentImageList.value = images.map((url, index) => ({
+        uid: `${detail.id || 'env'}-${index}`,
+        name: url.split('/').pop() || `env-${index}.jpg`,
+        status: 'finished',
+        url
+      }))
+    } else {
+      environmentImageList.value = []
+    }
   } catch (error) {
     console.error('加载商品详情失败', error)
     productForm.value = {
       name: product.name,
       description: product.description || '',
+      tags: product.tags || '',
       specifications: product.specifications || '',
       category: product.category || '',
       price: product.price,
@@ -281,6 +355,8 @@ const editProduct = async (product) => {
       image: product.image || '',
       detailImages: product.detailImages || '',
       detailText: product.detailText || '',
+      environmentImages: product.environmentImages || '',
+      environmentVideo: product.environmentVideo || '',
       merchantId: product.merchantId
     }
     if (product.detailImages) {
@@ -293,6 +369,17 @@ const editProduct = async (product) => {
       }))
     } else {
       detailImageList.value = []
+    }
+    if (product.environmentImages) {
+      const images = product.environmentImages.split(',').map(img => img.trim()).filter(Boolean)
+      environmentImageList.value = images.map((url, index) => ({
+        uid: `${product.id || 'env'}-${index}`,
+        name: url.split('/').pop() || `env-${index}.jpg`,
+        status: 'finished',
+        url
+      }))
+    } else {
+      environmentImageList.value = []
     }
   }
   loadCategories()
@@ -307,6 +394,8 @@ const saveProduct = async () => {
 
   const detailImageUrls = detailImageList.value.map(item => item.url).join(',')
   productForm.value.detailImages = detailImageUrls
+  const envImageUrls = environmentImageList.value.map(item => item.url).join(',')
+  productForm.value.environmentImages = envImageUrls
 
   try {
     if (editingProduct.value) {
@@ -321,6 +410,7 @@ const saveProduct = async () => {
     productForm.value = {
       name: '',
       description: '',
+      tags: '',
       specifications: '',
       category: '',
       price: 0,
@@ -328,9 +418,12 @@ const saveProduct = async () => {
       image: '',
       detailImages: '',
       detailText: '',
+      environmentImages: '',
+      environmentVideo: '',
       merchantId: null
     }
     detailImageList.value = []
+    environmentImageList.value = []
     loadProducts()
   } catch (error) {
     console.error('保存商品失败', error)
@@ -436,6 +529,64 @@ const handleDetailImageRemove = (file) => {
   const index = detailImageList.value.findIndex(item => item.uid === file.uid)
   if (index > -1) {
     detailImageList.value.splice(index, 1)
+  }
+}
+
+const handleEnvImageUpload = async (options) => {
+  const { file } = options
+  try {
+    const res = await uploadImage(file)
+    if (res && res.code === 200 && res.data) {
+      environmentImageList.value.push({
+        uid: Date.now(),
+        name: file.name,
+        url: res.data
+      })
+      ElMessage.success('图片上传成功')
+    } else {
+      ElMessage.error(res?.message || '图片上传失败')
+    }
+  } catch (error) {
+    console.error('图片上传失败', error)
+    ElMessage.error(error.response?.data?.message || '图片上传失败，请重试')
+  }
+}
+
+const handleEnvImageRemove = (file) => {
+  const index = environmentImageList.value.findIndex(item => item.uid === file.uid)
+  if (index > -1) {
+    environmentImageList.value.splice(index, 1)
+  }
+}
+
+const beforeVideoUpload = (file) => {
+  const isVideo = file.type.startsWith('video/')
+  const isLt200M = file.size / 1024 / 1024 < 200
+
+  if (!isVideo) {
+    ElMessage.error('只能上传视频文件!')
+    return false
+  }
+  if (!isLt200M) {
+    ElMessage.error('视频大小不能超过 200MB!')
+    return false
+  }
+  return true
+}
+
+const handleEnvVideoUpload = async (options) => {
+  const { file } = options
+  try {
+    const res = await uploadVideo(file)
+    if (res && res.code === 200 && res.data) {
+      productForm.value.environmentVideo = res.data
+      ElMessage.success('视频上传成功')
+    } else {
+      ElMessage.error(res?.message || '视频上传失败')
+    }
+  } catch (error) {
+    console.error('视频上传失败', error)
+    ElMessage.error(error.response?.data?.message || '视频上传失败，请重试')
   }
 }
 

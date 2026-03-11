@@ -14,9 +14,12 @@
     </el-carousel>
 
     <div class="content">
-      <!-- 分类专区 -->
+      <!-- 分类专区：体现“产地/品类特色” -->
       <div class="category-section">
-        <h2>商品分类</h2>
+        <div class="section-header">
+          <h2>特色分类</h2>
+          <p class="section-subtitle">按品类和产地逛一逛，发现各地特色农产品</p>
+        </div>
         <el-row :gutter="20" v-loading="categoryLoading">
           <el-col :span="6" v-for="cat in categories" :key="cat.id">
             <el-card class="category-card" @click="goToCategory(cat.name)">
@@ -30,6 +33,7 @@
                   </div>
                   <h3>{{ cat.name }}</h3>
                   <p v-if="cat.description" class="category-desc">{{ cat.description }}</p>
+                  <p v-else class="category-desc">精选本地优质{{ cat.name }}，产地直发</p>
                 </div>
               </div>
             </el-card>
@@ -37,7 +41,11 @@
         </el-row>
       </div>
 
-      <h2 style="margin-top: 40px">热门商品</h2>
+      <!-- 当季主推：突出“新鲜 / 现摘 / 时令” -->
+      <div class="section-header" style="margin-top: 40px">
+        <h2>当季热卖 · 产地直发</h2>
+        <p class="section-subtitle">应季农产品，新鲜采摘后直发到家</p>
+      </div>
       <el-row :gutter="20" v-loading="loading">
         <el-col :span="6" v-for="product in products" :key="product.id">
           <el-card class="product-card" @click="goToDetail(product.id)">
@@ -45,6 +53,22 @@
             <div class="product-info">
               <h3>{{ product.name }}</h3>
               <p class="product-desc">{{ product.description }}</p>
+              <div class="product-tags">
+                <template v-if="getProductTags(product).length">
+                  <el-tag
+                    v-for="tag in getProductTags(product)"
+                    :key="tag"
+                    size="small"
+                    effect="plain"
+                  >
+                    {{ tag }}
+                  </el-tag>
+                </template>
+                <template v-else>
+                  <el-tag size="small" type="success" effect="plain">产地直供</el-tag>
+                  <el-tag size="small" type="warning" effect="plain">时令优选</el-tag>
+                </template>
+              </div>
               <div class="product-footer">
                 <span class="price">¥{{ product.price }}</span>
                 <el-button type="primary" size="small" @click.stop="addToCart(product.id)">
@@ -76,6 +100,17 @@ const categories = ref([])
 const categoryLoading = ref(false)
 
 const banners = ref([])
+
+// 根据商品的 tags 字段解析出展示用标签
+const getProductTags = (product) => {
+  if (!product?.tags) {
+    return []
+  }
+  return product.tags
+    .split(/[,，、]/)
+    .map(tag => tag.trim())
+    .filter(Boolean)
+}
 
 const loadProducts = async () => {
   loading.value = true
@@ -197,6 +232,17 @@ onMounted(() => {
   font-size: 28px;
 }
 
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.section-subtitle {
+  font-size: 14px;
+  color: #909399;
+}
+
 .product-card {
   cursor: pointer;
   margin-bottom: 20px;
@@ -228,6 +274,12 @@ onMounted(() => {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+.product-tags {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 .product-footer {

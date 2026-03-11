@@ -27,6 +27,22 @@
           <div class="product-info">
             <h3>{{ product.name }}</h3>
             <p class="product-desc">{{ product.description }}</p>
+            <div class="product-tags">
+              <template v-if="getProductTags(product).length">
+                <el-tag
+                  v-for="tag in getProductTags(product)"
+                  :key="tag"
+                  size="small"
+                  effect="plain"
+                >
+                  {{ tag }}
+                </el-tag>
+              </template>
+              <template v-else>
+                <el-tag size="small" type="success" effect="plain">产地直供</el-tag>
+                <el-tag v-if="product.category" size="small" effect="plain">{{ product.category }}</el-tag>
+              </template>
+            </div>
             <div class="product-footer">
               <span class="price">¥{{ product.price }}</span>
               <span class="stock">库存: {{ product.stock }}</span>
@@ -64,6 +80,17 @@ const currentPage = ref(1)
 const pageSize = ref(12)
 const total = ref(0)
 const categoryList = ref([])
+
+// 根据商品的 tags 字段解析出展示用标签
+const getProductTags = (product) => {
+  if (!product?.tags) {
+    return []
+  }
+  return product.tags
+    .split(/[,，、]/)
+    .map(tag => tag.trim())
+    .filter(Boolean)
+}
 
 const loadProducts = async () => {
   loading.value = true
@@ -158,6 +185,12 @@ onMounted(() => {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+.product-tags {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 .product-footer {

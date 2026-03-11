@@ -192,12 +192,26 @@ export const deleteAdminCategory = (id) => {
   })
 }
 
-// 文件上传
+// 文件上传 - 图片
 export const uploadImage = (file) => {
   const formData = new FormData()
   formData.append('file', file)
   return request({
     url: '/upload/image',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+// 文件上传 - 视频
+export const uploadVideo = (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request({
+    url: '/upload/video',
     method: 'post',
     data: formData,
     headers: {

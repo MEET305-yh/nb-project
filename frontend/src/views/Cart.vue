@@ -25,7 +25,7 @@
           <el-input-number
             v-model="row.quantity"
             :min="1"
-            :max="Math.max(row.product?.stock || 1, 1)"
+            :max="row.product?.stock || 9999"
             :disabled="(row.product?.stock || 0) === 0"
             @change="updateQuantity(row.id, row.quantity)"
             style="width: 120px"

@@ -46,6 +46,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
 
         product.setStock(newStock);
+        // 库存为 0 时自动下架
+        if (newStock == 0) {
+            product.setStatus(0);
+        }
         return updateById(product);
     }
 
