@@ -1,0 +1,327 @@
+' ============================================
+' 特色农产品销售平台 - ER图代码集合
+' ============================================
+
+' ============================================
+' 图4.2 用户信息表实体图
+' ============================================
+@startuml 用户实体图
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+
+entity "用户" as user {
+    * id : BIGINT <<PK>>
+    --
+    * username : VARCHAR(50) <<UNIQUE>>
+    * password : VARCHAR(255)
+    phone : VARCHAR(20)
+    email : VARCHAR(100)
+    nickname : VARCHAR(50)
+    avatar : VARCHAR(255)
+    * role : VARCHAR(20)
+    * create_time : DATETIME
+    * update_time : DATETIME
+    * deleted : INT
+}
+
+@enduml
+
+' ============================================
+' 图4.3 商品信息表实体图
+' ============================================
+@startuml 商品实体图
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+
+entity "商品" as product {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(200)
+    description : TEXT
+    * category : VARCHAR(50)
+    * price : DECIMAL(10,2)
+    * stock : INT
+    image : VARCHAR(255)
+    merchant_id : BIGINT
+    * status : INT
+    * create_time : DATETIME
+    * update_time : DATETIME
+    * deleted : INT
+}
+
+@enduml
+
+' ============================================
+' 图4.4 订单信息表实体图
+' ============================================
+@startuml 订单实体图
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+
+entity "订单" as order {
+    * id : BIGINT <<PK>>
+    --
+    * order_no : VARCHAR(50) <<UNIQUE>>
+    * user_id : BIGINT
+    * total_amount : DECIMAL(10,2)
+    * status : VARCHAR(20)
+    shipping_address : VARCHAR(500)
+    receiver_name : VARCHAR(50)
+    receiver_phone : VARCHAR(20)
+    * create_time : DATETIME
+    * update_time : DATETIME
+    * deleted : INT
+}
+
+@enduml
+
+' ============================================
+' 图4.5 订单项信息表实体图
+' ============================================
+@startuml 订单项实体图
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+
+entity "订单项" as order_item {
+    * id : BIGINT <<PK>>
+    --
+    * order_id : BIGINT
+    * product_id : BIGINT
+    product_name : VARCHAR(200)
+    product_image : VARCHAR(255)
+    * price : DECIMAL(10,2)
+    * quantity : INT
+    * subtotal : DECIMAL(10,2)
+    * create_time : DATETIME
+}
+
+@enduml
+
+' ============================================
+' 图4.6 购物车信息表实体图
+' ============================================
+@startuml 购物车实体图
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+
+entity "购物车" as shopping_cart {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT
+    * product_id : BIGINT
+    * quantity : INT
+    * create_time : DATETIME
+    * update_time : DATETIME
+}
+
+@enduml
+
+' ============================================
+' 图4.7 评价信息表实体图
+' ============================================
+@startuml 评价实体图
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+
+entity "评价" as evaluation {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT
+    * product_id : BIGINT
+    order_id : BIGINT
+    * rating : INT
+    content : TEXT
+    images : VARCHAR(500)
+    * create_time : DATETIME
+    * deleted : INT
+}
+
+@enduml
+
+' ============================================
+' 图4.8 地址信息表实体图
+' ============================================
+@startuml 地址实体图
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+
+entity "地址" as address {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT
+    * receiver_name : VARCHAR(50)
+    * receiver_phone : VARCHAR(20)
+    province : VARCHAR(50)
+    city : VARCHAR(50)
+    district : VARCHAR(50)
+    detail : VARCHAR(200)
+    * is_default : INT
+    * create_time : DATETIME
+    * update_time : DATETIME
+    * deleted : INT
+}
+
+@enduml
+
+' ============================================
+' 图4.9 分类信息表实体图
+' ============================================
+@startuml 分类实体图
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+
+entity "分类" as category {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(50) <<UNIQUE>>
+    description : VARCHAR(200)
+    image : VARCHAR(255)
+    * sort_order : INT
+    * create_time : DATETIME
+    * update_time : DATETIME
+    * deleted : INT
+}
+
+@enduml
+
+' ============================================
+' 图4.10 数据库ER关系图（完整版）
+' ============================================
+@startuml 数据库ER关系图
+!theme plain
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+skinparam linetype ortho
+
+entity "用户" as user {
+    * id : BIGINT <<PK>>
+    --
+    * username : VARCHAR(50)
+    * password : VARCHAR(255)
+    phone : VARCHAR(20)
+    email : VARCHAR(100)
+    nickname : VARCHAR(50)
+    avatar : VARCHAR(255)
+    * role : VARCHAR(20)
+    * create_time : DATETIME
+    * update_time : DATETIME
+    * deleted : INT
+}
+
+entity "商品" as product {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(200)
+    description : TEXT
+    * category : VARCHAR(50)
+    * price : DECIMAL(10,2)
+    * stock : INT
+    image : VARCHAR(255)
+    merchant_id : BIGINT
+    * status : INT
+    * create_time : DATETIME
+    * update_time : DATETIME
+    * deleted : INT
+}
+
+entity "订单" as order {
+    * id : BIGINT <<PK>>
+    --
+    * order_no : VARCHAR(50)
+    * user_id : BIGINT
+    * total_amount : DECIMAL(10,2)
+    * status : VARCHAR(20)
+    shipping_address : VARCHAR(500)
+    receiver_name : VARCHAR(50)
+    receiver_phone : VARCHAR(20)
+    * create_time : DATETIME
+    * update_time : DATETIME
+    * deleted : INT
+}
+
+entity "订单项" as order_item {
+    * id : BIGINT <<PK>>
+    --
+    * order_id : BIGINT
+    * product_id : BIGINT
+    product_name : VARCHAR(200)
+    product_image : VARCHAR(255)
+    * price : DECIMAL(10,2)
+    * quantity : INT
+    * subtotal : DECIMAL(10,2)
+    * create_time : DATETIME
+}
+
+entity "购物车" as shopping_cart {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT
+    * product_id : BIGINT
+    * quantity : INT
+    * create_time : DATETIME
+    * update_time : DATETIME
+}
+
+entity "评价" as evaluation {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT
+    * product_id : BIGINT
+    order_id : BIGINT
+    * rating : INT
+    content : TEXT
+    images : VARCHAR(500)
+    * create_time : DATETIME
+    * deleted : INT
+}
+
+entity "地址" as address {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT
+    * receiver_name : VARCHAR(50)
+    * receiver_phone : VARCHAR(20)
+    province : VARCHAR(50)
+    city : VARCHAR(50)
+    district : VARCHAR(50)
+    detail : VARCHAR(200)
+    * is_default : INT
+    * create_time : DATETIME
+    * update_time : DATETIME
+    * deleted : INT
+}
+
+entity "分类" as category {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(50)
+    description : VARCHAR(200)
+    image : VARCHAR(255)
+    * sort_order : INT
+    * create_time : DATETIME
+    * update_time : DATETIME
+    * deleted : INT
+}
+
+' 定义关系
+user ||--o{ order : "创建"
+user ||--o{ shopping_cart : "拥有"
+user ||--o{ address : "拥有"
+user ||--o{ evaluation : "发表"
+product ||--o{ order_item : "包含"
+product ||--o{ shopping_cart : "加入"
+product ||--o{ evaluation : "被评价"
+order ||--o{ order_item : "包含"
+order ||--o| evaluation : "关联"
+
+@enduml
+
+

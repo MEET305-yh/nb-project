@@ -1,0 +1,98 @@
+@startuml 特色农产品销售平台前端框架图
+!theme plain
+skinparam packageStyle rectangle
+skinparam defaultFontName "Microsoft YaHei"
+skinparam defaultFontSize 12
+skinparam package {
+    BackgroundColor #E8F4F8
+    BorderColor #409EFF
+    BorderThickness 2
+}
+skinparam rectangle {
+    BackgroundColor #FFFFFF
+    BorderColor #409EFF
+}
+
+title 特色农产品销售平台 - 前端框架图
+
+package "前端系统" {
+    
+    package "登录注册模块" #LightBlue {
+        rectangle "用户登录\n(含验证码)" as Login
+        rectangle "用户注册" as Register
+        rectangle "退出登录" as Logout
+    }
+    
+    package "首页模块" #LightGreen {
+        rectangle "轮播图展示" as Banner
+        rectangle "商品分类展示" as Category
+        rectangle "热门商品展示" as HotProducts
+    }
+    
+    package "商品列表模块" #LightYellow {
+        rectangle "商品搜索" as Search
+        rectangle "分类筛选" as Filter
+        rectangle "商品详情" as ProductDetail
+    }
+    
+    package "购物车模块" #LightCoral {
+        rectangle "添加商品" as AddToCart
+        rectangle "修改数量" as UpdateQuantity
+        rectangle "删除商品" as RemoveFromCart
+        rectangle "批量操作" as BatchOperation
+    }
+    
+    package "订单管理模块" #LightPink {
+        rectangle "订单列表" as OrderList
+        rectangle "订单详情" as OrderDetail
+        rectangle "订单支付" as OrderPay
+        rectangle "确认收货" as ConfirmReceipt
+        rectangle "订单评价" as OrderEvaluation
+    }
+    
+    package "个人中心模块" #LightGray {
+        rectangle "个人信息管理" as UserInfo
+        rectangle "收货地址管理" as Address
+        rectangle "密码修改" as ChangePassword
+    }
+    
+    package "商家后台模块" #LightSteelBlue {
+        package "商品管理子模块" {
+            rectangle "添加商品" as MerchantAddProduct
+            rectangle "修改商品" as MerchantEditProduct
+            rectangle "删除商品" as MerchantDeleteProduct
+            rectangle "上架/下架" as MerchantStatus
+        }
+        rectangle "订单管理" as MerchantOrder
+        rectangle "数据统计" as MerchantStats
+    }
+    
+    package "管理后台模块" #LightSalmon {
+        rectangle "用户管理" as AdminUser
+        package "商品分类管理子模块" {
+            rectangle "添加分类" as AdminAddCategory
+            rectangle "修改分类" as AdminEditCategory
+            rectangle "删除分类" as AdminDeleteCategory
+        }
+        rectangle "轮播图管理" as AdminBanner
+        rectangle "数据统计" as AdminStats
+    }
+}
+
+' 定义模块间的关系
+Login --> OrderList : 登录后访问
+Register --> Login : 注册后登录
+Banner --> Category : 点击跳转
+Category --> Filter : 分类筛选
+Search --> ProductDetail : 查看详情
+Filter --> ProductDetail : 查看详情
+ProductDetail --> AddToCart : 加入购物车
+AddToCart --> OrderPay : 去结算
+OrderPay --> ConfirmReceipt : 支付完成
+ConfirmReceipt --> OrderEvaluation : 确认收货
+UserInfo --> Address : 管理地址
+Address --> OrderPay : 选择地址
+
+@enduml
+
+

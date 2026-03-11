@@ -1,0 +1,53 @@
+server:
+  port: 8080
+  tomcat:
+    max-http-post-size: 10MB
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: agricultural-platform
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/agricultural_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: YH2198432437717
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted   # 逻辑删除字段名
+      logic-delete-value: 1        # 删除状态值
+      logic-not-delete-value: 0    # 未删除状态值
+
+  mapper-locations: classpath:mapper/*.xml  #指定XML映射文件的位置
+  type-aliases-package: com.agricultural.entity
+
+jwt:
+  secret: agricultural-platform-secret-key-2024
+  expiration: 86400000
+
+logging:
+  level:
+    com.agricultural: debug
+    org.springframework.security: debug
+
+alioss:
+  endpoint: ${alioss.endpoint}
+  access-key-id: ${alioss.access-key-id}
+  access-key-secret: ${alioss.access-key-secret}
+  bucket-name: ${alioss.bucket-name}
+
