@@ -42,7 +42,7 @@
           <template #default="{ row }">
             <el-button size="small" @click="viewOrder(row)">查看</el-button>
             <el-button
-              v-if="row.status === 'PAID'"
+              v-if="!isAdminReadOnly && row.status === 'PAID'"
               size="small"
               type="success"
               @click="shipOrder(row.id)"
@@ -50,7 +50,7 @@
               发货
             </el-button>
             <el-button
-              v-if="row.status !== 'COMPLETED' && row.status !== 'CANCELLED'"
+              v-if="!isAdminReadOnly && row.status !== 'COMPLETED' && row.status !== 'CANCELLED'"
               size="small"
               type="danger"
               @click="cancelOrder(row.id)"
@@ -107,10 +107,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { getAdminOrders, getAdminOrder, shipOrder as shipOrderApi, cancelOrder as cancelOrderApi } from '@/api/admin'
+import { useUserStore } from '@/stores/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
+const userStore = useUserStore()
+const isAdminReadOnly = computed(() => userStore.role === 'ADMIN')
 const orders = ref([])
 const loading = ref(false)
 const orderNo = ref('')
@@ -152,6 +155,10 @@ const viewOrder = async (order) => {
 }
 
 const shipOrder = async (id) => {
+  if (isAdminReadOnly.value) {
+    ElMessage.warning('管理员仅可查看订单，不能发货')
+    return
+  }
   try {
     await ElMessageBox.confirm('确定要发货吗？', '提示', {
       type: 'warning'
@@ -167,6 +174,10 @@ const shipOrder = async (id) => {
 }
 
 const cancelOrder = async (id) => {
+  if (isAdminReadOnly.value) {
+    ElMessage.warning('管理员仅可查看订单，不能取消订单')
+    return
+  }
   try {
     await ElMessageBox.confirm('确定要取消这个订单吗？', '提示', {
       type: 'warning'
