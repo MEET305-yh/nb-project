@@ -163,9 +163,10 @@ const deleteAddress = async (id) => {
   try {
     await deleteAddressApi(id)
     ElMessage.success('删除成功')
-    loadAddresses()
+    await loadAddresses()
   } catch (error) {
     console.error('删除地址失败', error)
+    ElMessage.error(error.response?.data?.message || error.message || '删除失败')
   }
 }
 

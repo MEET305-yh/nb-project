@@ -78,14 +78,18 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address> impl
 
     @Override
     public boolean deleteAddress(Long addressId) {
-        Address address = getById(addressId);
-        if (address == null) {
-            throw new IllegalArgumentException("地址不存在");
-        }
+        // Use update-by-wrapper so the update does not depend on the returned entity having
+        // a correctly populated primary key field.
+        LambdaUpdateWrapper<Address> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Address::getId, addressId)
+                .set(Address::getDeleted, 1)
+                .set(Address::getUpdateTime, LocalDateTime.now());
 
-        address.setDeleted(1);
-        address.setUpdateTime(LocalDateTime.now());
-        return updateById(address);
+        boolean updated = update(updateWrapper);
+        if (!updated) {
+            throw new IllegalArgumentException("地址不存在或删除失败");
+        }
+        return updated;
     }
 
     @Override
