@@ -175,7 +175,10 @@ const loadBanners = async () => {
 const addToCart = async (productId) => {
   if (!userStore.isAuthenticated) {
     ElMessage.warning('请先登录')
-    router.push('/login')
+    router.push({
+      path: '/login',
+      query: { redirect: router.currentRoute.value.fullPath }
+    })
     return
   }
 

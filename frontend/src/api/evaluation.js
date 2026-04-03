@@ -1,9 +1,10 @@
 import request from './request'
 
-export const getProductEvaluations = (productId) => {
+export const getProductEvaluations = (productId, options = {}) => {
   return request({
     url: `/evaluations/product/${productId}`,
-    method: 'get'
+    method: 'get',
+    ...options
   })
 }
 

@@ -316,7 +316,14 @@ const loadProduct = async () => {
 
 const loadEvaluations = async () => {
   try {
-    const res = await getProductEvaluations(route.params.id)
+    const needLoginForRequest = !userStore.isAuthenticated
+    const res = await getProductEvaluations(route.params.id, {
+      // When the user is not logged in, keep evaluation viewing public:
+      // - don't attach Authorization token
+      // - don't force redirect to login on 401
+      skipAuthToken: needLoginForRequest,
+      skipAuthRedirect: needLoginForRequest
+    })
     evaluations.value = (res.data || []).map(ev => ({
       ...ev,
       imageList: ev.images
@@ -370,7 +377,10 @@ const loadViewedProducts = async () => {
 const addToCart = async () => {
   if (!userStore.isAuthenticated) {
     ElMessage.warning('请先登录')
-    router.push('/login')
+    router.push({
+      path: '/login',
+      query: { redirect: router.currentRoute.value.fullPath }
+    })
     return
   }
 
@@ -391,7 +401,10 @@ const buyNow = () => {
       message: '请先登录',
       duration: 1000
     })
-    router.push('/login')
+    router.push({
+      path: '/login',
+      query: { redirect: '/checkout' }
+    })
     return
   }
   

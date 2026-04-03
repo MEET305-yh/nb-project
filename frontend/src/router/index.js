@@ -131,14 +131,20 @@ router.beforeEach((to, from, next) => {
   
   // 检查是否需要登录
   if (to.meta.requiresAuth && !userStore.isAuthenticated) {
-    next('/login')
+    next({
+      path: '/login',
+      query: { redirect: to.fullPath }
+    })
     return
   }
   
   // 检查管理端权限
   if (to.meta.requiresAdmin) {
     if (!userStore.isAuthenticated) {
-      next('/login')
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
       return
     }
     if (userStore.role !== 'ADMIN') {
@@ -149,7 +155,10 @@ router.beforeEach((to, from, next) => {
 
   if (to.meta.requiresMerchant) {
     if (!userStore.isAuthenticated) {
-      next('/login')
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
       return
     }
     if (userStore.role !== 'MERCHANT' && userStore.role !== 'ADMIN') {

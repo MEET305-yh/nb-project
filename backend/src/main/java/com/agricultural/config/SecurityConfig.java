@@ -64,7 +64,13 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/products/public/**", "/categories/public/**", "/banners/public/**").permitAll()
+                .requestMatchers(
+                    "/auth/**",
+                    "/products/public/**",
+                    "/categories/public/**",
+                    "/banners/public/**",
+                    "/evaluations/product/**"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

@@ -43,12 +43,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
 import { getCaptcha } from '@/api/user'
 
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
 const formRef = ref(null)
 const loading = ref(false)
@@ -95,7 +96,8 @@ const handleLogin = async () => {
       try {
         await userStore.login(form.value)
         ElMessage.success('登录成功')
-        router.push('/')
+        const redirectPath = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
+        router.push(redirectPath)
       } catch (error) {
         console.error('登录失败', error)
         // 登录失败后刷新验证码

@@ -11,7 +11,9 @@ const request = axios.create({
 request.interceptors.request.use(
   config => {
     const userStore = useUserStore()
-    if (userStore.token) {
+    // Some requests (e.g. public evaluation list) should not carry/trigger auth redirect behavior.
+    if (!config?.skipAuthToken && userStore.token) {
+      config.headers = config.headers || {}
       config.headers.Authorization = `Bearer ${userStore.token}`
     }
     return config
@@ -34,6 +36,10 @@ request.interceptors.response.use(
   error => {
     if (error.response) {
       if (error.response.status === 401) {
+        // Avoid logging out / redirecting to login for explicitly unauthenticated-friendly requests.
+        if (error.config?.skipAuthRedirect) {
+          return Promise.reject(error)
+        }
         const userStore = useUserStore()
         userStore.logout()
         router.push('/login')
