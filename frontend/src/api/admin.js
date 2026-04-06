@@ -192,6 +192,14 @@ export const deleteAdminCategory = (id) => {
   })
 }
 
+export const updateCategoryStatus = (id, status) => {
+  return request({
+    url: `/admin/categories/${id}/status`,
+    method: 'put',
+    params: { status }
+  })
+}
+
 // 文件上传 - 图片
 export const uploadImage = (file) => {
   const formData = new FormData()

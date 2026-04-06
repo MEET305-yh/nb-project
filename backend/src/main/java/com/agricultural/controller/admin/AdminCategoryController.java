@@ -73,6 +73,9 @@ public class AdminCategoryController {
         }
 
         category.setDeleted(0);
+        if (category.getStatus() == null) {
+            category.setStatus(1); // 默认上架
+        }
         if (category.getSortOrder() == null) {
             category.setSortOrder(0);
         }
@@ -134,6 +137,22 @@ public class AdminCategoryController {
         } else {
             return Result.error("删除失败");
         }
+    }
+
+    @PutMapping("/{id}/status")
+    public Result<String> updateCategoryStatus(@PathVariable Long id, @RequestParam Integer status) {
+        Category category = categoryService.getById(id);
+        if (category == null || category.getDeleted() == 1) {
+            return Result.error("分类不存在");
+        }
+        if (status == null || (status != 0 && status != 1)) {
+            return Result.error("状态值无效");
+        }
+
+        category.setStatus(status);
+        category.setUpdateTime(LocalDateTime.now());
+        categoryService.updateById(category);
+        return Result.success(status == 1 ? "上架成功" : "下架成功");
     }
 }
 

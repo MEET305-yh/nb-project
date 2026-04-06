@@ -30,11 +30,25 @@
         </el-table-column>
         <el-table-column prop="name" label="分类名称" />
         <el-table-column prop="description" label="分类描述" />
+        <el-table-column label="状态" width="100">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 1 ? 'success' : 'info'">
+              {{ row.status === 1 ? '上架' : '下架' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="sortOrder" label="排序" width="100" />
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="editCategory(row)">编辑</el-button>
+            <el-button
+              size="small"
+              :type="row.status === 1 ? 'warning' : 'success'"
+              @click="toggleCategoryStatus(row)"
+            >
+              {{ row.status === 1 ? '下架' : '上架' }}
+            </el-button>
             <el-button size="small" type="danger" @click="deleteCategory(row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -90,7 +104,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getAdminCategories, createAdminCategory, updateAdminCategory, deleteAdminCategory as deleteCategoryApi, uploadImage } from '@/api/admin'
+import {
+  getAdminCategories,
+  createAdminCategory,
+  updateAdminCategory,
+  deleteAdminCategory as deleteCategoryApi,
+  updateCategoryStatus,
+  uploadImage
+} from '@/api/admin'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 
@@ -184,6 +205,19 @@ const deleteCategory = async (id) => {
       console.error('删除分类失败', error)
       ElMessage.error(error.response?.data?.message || error.message || '删除失败，请稍后重试')
     }
+  }
+}
+
+const toggleCategoryStatus = async (category) => {
+  const nextStatus = category.status === 1 ? 0 : 1
+  const actionText = nextStatus === 1 ? '上架' : '下架'
+  try {
+    await updateCategoryStatus(category.id, nextStatus)
+    ElMessage.success(`${actionText}成功`)
+    loadCategories()
+  } catch (error) {
+    console.error(`${actionText}分类失败`, error)
+    ElMessage.error(error.response?.data?.message || error.message || `${actionText}失败，请稍后重试`)
   }
 }
 

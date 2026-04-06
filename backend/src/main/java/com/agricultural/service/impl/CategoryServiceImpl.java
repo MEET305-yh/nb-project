@@ -16,6 +16,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     public List<Category> getAllCategories() {
         LambdaQueryWrapper<Category> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Category::getDeleted, 0);
+        wrapper.eq(Category::getStatus, 1); // 前台仅展示上架分类
         wrapper.orderByAsc(Category::getSortOrder);
         wrapper.orderByDesc(Category::getCreateTime);
         return list(wrapper);

@@ -15,6 +15,7 @@ public class Category {
     private String name;
     private String description;
     private String image; // 分类背景图片 URL
+    private Integer status; // 0-下架, 1-上架
     private Integer sortOrder;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
