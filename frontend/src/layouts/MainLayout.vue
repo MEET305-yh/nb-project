@@ -32,7 +32,7 @@
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-                  <el-dropdown-item v-if="userStore.isMerchant || userStore.isAdmin" command="merchant">
+                  <el-dropdown-item v-if="userStore.isMerchant" command="merchant">
                     前往商家后台
                   </el-dropdown-item>
                   <el-dropdown-item v-if="userStore.isAdmin" command="admin">

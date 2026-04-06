@@ -85,6 +85,21 @@ const routes = [
         path: 'banners',
         name: 'AdminBanners',
         component: () => import('@/views/admin/Banners.vue')
+      },
+      {
+        path: 'products',
+        name: 'AdminProducts',
+        component: () => import('@/views/merchant/Products.vue')
+      },
+      {
+        path: 'orders',
+        name: 'AdminOrders',
+        component: () => import('@/views/merchant/Orders.vue')
+      },
+      {
+        path: 'statistics',
+        name: 'AdminStatistics',
+        component: () => import('@/views/merchant/Statistics.vue')
       }
     ]
   },
@@ -161,7 +176,7 @@ router.beforeEach((to, from, next) => {
       })
       return
     }
-    if (userStore.role !== 'MERCHANT' && userStore.role !== 'ADMIN') {
+    if (userStore.role !== 'MERCHANT') {
       next('/')
       return
     }

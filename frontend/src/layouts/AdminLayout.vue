@@ -25,6 +25,18 @@
           <el-icon><Picture /></el-icon>
           <span>轮播图管理</span>
         </el-menu-item>
+        <el-menu-item index="/admin/products">
+          <el-icon><Goods /></el-icon>
+          <span>商品管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/orders">
+          <el-icon><List /></el-icon>
+          <span>订单管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/statistics">
+          <el-icon><TrendCharts /></el-icon>
+          <span>数据信息</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
@@ -64,7 +76,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
-import { DataBoard, User, Folder, Picture } from '@element-plus/icons-vue'
+import { DataBoard, User, Folder, Picture, Goods, List, TrendCharts } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -77,7 +89,10 @@ const currentPageName = computed(() => {
     '/admin/dashboard': '仪表盘',
     '/admin/users': '用户管理',
     '/admin/categories': '分类管理',
-    '/admin/banners': '轮播图管理'
+    '/admin/banners': '轮播图管理',
+    '/admin/products': '商品管理',
+    '/admin/orders': '订单管理',
+    '/admin/statistics': '数据信息'
   }
   return nameMap[route.path] || '管理后台'
 })
